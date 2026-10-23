@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Empires &amp; Dynasties — A Comparative Timeline of Europe &amp; China</title>
+  <style>
+    /* ===== Vintage parchment chronology · single-file, no frameworks ===== */
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia,
+                   'Times New Roman', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+      color: #3a2a16;
+      background:
+        radial-gradient(1100px 520px at 50% 4%, rgba(255, 248, 220, .45), transparent 62%),
+        radial-gradient(circle at 88% 92%, rgba(96, 64, 28, .12), transparent 45%),
+        radial-gradient(circle at 10% 80%, rgba(96, 64, 28, .12), transparent 45%),
+        #d9c69c;
+    }
+
+    .sheet {
+      max-width: 1280px;
+      margin: 26px auto 46px;
+      padding: 26px 32px 20px;
+      border: 1px solid #8a6b3f;
+      outline: 3px double #8a6b3f;
+      outline-offset: -8px;
+      border-radius: 3px;
+      background:
+        repeating-linear-gradient(0deg, rgba(120, 90, 50, .028) 0 2px, transparent 2px 5px),
+        radial-gradient(circle at 18% 24%, rgba(140, 100, 50, .07), transparent 38%),
+        radial-gradient(circle at 82% 78%, rgba(140, 100, 50, .07), transparent 38%),
+        linear-gradient(#f5ebd1, #eee0bc);
+      box-shadow: 0 18px 44px rgba(60, 40, 15, .35), inset 0 0 90px rgba(140, 100, 50, .13);
+    }
+
+    .plate {
+      text-align: center; font-size: 11px; letter-spacing: .35em;
+      color: #8a6b45; text-transform: uppercase;
+    }
+    h1 {
+      text-align: center; font-size: 30px; font-weight: 600;
+      letter-spacing: .14em; font-variant: small-caps;
+      margin: 6px 0 2px; color: #43301a;
+    }
+    .sub {
+      text-align: center; font-size: 13.5px; font-style: italic;
+      color: #6b4f2a; margin: 0;
+    }
+    .orn { display: flex; align-items: center; gap: 14px; margin: 14px 0 0; color: #8a6b3f; }
+    .orn::before, .orn::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(122, 92, 58, .55), transparent);
+    }
+    .orn span { font-size: 15px; }
+
+    /* ===== Toolbar: legend + navigation ===== */
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin: 14px 0 10px; flex-wrap: wrap;
+    }
+    .legend {
+      display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+      font-size: 12.5px; color: #5a4326;
+    }
+    .sw {
+      display: inline-block; width: 24px; height: 13px; border-radius: 2px;
+      border: 1px solid #7c6136; vertical-align: -2px; margin-right: 6px;
+    }
+    .sw.eu { background: linear-gradient(#cfb489, #b89c66); }
+    .sw.cn { background: linear-gradient(#c98f66, #ad6a41); }
+    .hint { font-size: 11.5px; font-style: italic; color: #8a6b45; }
+    .navbtns { display: flex; gap: 8px; }
+    .navbtn {
+      font-family: inherit; font-size: 13px; letter-spacing: .08em;
+      color: #4a3418; cursor: pointer; padding: 5px 15px;
+      background: linear-gradient(#f0e3c1, #e2d0a4);
+      border: 1px solid #7c6136; border-radius: 3px;
+      box-shadow: 0 2px 0 rgba(90, 60, 20, .25);
+    }
+    .navbtn:active { transform: translateY(1px); box-shadow: none; }
+
+    /* ===== Board: fixed captions + scrollable chart ===== */
+    .board {
+      display: flex;
+      border: 1px solid #8a6b3f; border-radius: 2px;
+      background: linear-gradient(#f6ecd2, #efe1bc);
+      box-shadow: inset 0 0 44px rgba(140, 100, 50, .10);
+    }
+    .side {
+      position: relative; flex: 0 0 86px;
+      border-right: 1px solid rgba(122, 92, 58, .35);
+    }
+    .cap {
+      position: absolute; left: 50%; writing-mode: vertical-rl;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; letter-spacing: .5em; text-transform: uppercase;
+      color: #5a4326; white-space: nowrap;
+    }
+    .cap.c-eu { transform: translateX(-50%) rotate(180deg); }
+    .cap.c-cn { transform: translateX(-50%); }
+    .fleur {
+      position: absolute; left: 0; width: 100%; text-align: center;
+      color: #8a6b3f; font-size: 15px; transform: translateY(-50%);
+    }
+    .viewport {
+      overflow-x: auto; overflow-y: hidden; position: relative;
+      cursor: grab; scrollbar-color: #a98d55 rgba(120, 84, 40, .08); scrollbar-width: thin;
+      outline: none;
+    }
+    .viewport:focus-visible { outline: 2px solid #8a6b3f; outline-offset: -2px; }
+    .viewport.grabbing { cursor: grabbing; }
+    .viewport::-webkit-scrollbar { height: 11px; }
+    .viewport::-webkit-scrollbar-track { background: rgba(120, 84, 40, .08); }
+    .viewport::-webkit-scrollbar-thumb {
+      background: #a98d55; border-radius: 6px; border: 2px solid #efe1bc;
+    }
+    .chart { position: relative; user-select: none; }
+
+    /* ===== Chart furniture ===== */
+    .bctint { position: absolute; top: 0; bottom: 0; left: 0; background: rgba(146, 90, 40, .055); }
+    .gline { position: absolute; top: 0; bottom: 0; width: 1px; }
+    .gline.minor { background: rgba(110, 78, 40, .13); }
+    .gline.major { background: rgba(110, 78, 40, .30); }
+    .laneband { position: absolute; left: 0; right: 0; height: 36px; background: rgba(120, 84, 40, .05); }
+    .axisline {
+      position: absolute; height: 2px; background: #5a4326;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .4);
+    }
+    .tick { position: absolute; width: 1px; background: #5a4326; }
+    .tick.major { height: 9px; }
+    .tick.minor { height: 5px; }
+    .axlbl {
+      position: absolute; transform: translateX(-50%); white-space: nowrap;
+      font-size: 10.5px; letter-spacing: .6px; color: #6b4f2a;
+    }
+
+    /* ===== Period blocks ===== */
+    .blk { position: absolute; height: 28px; border-radius: 2px; }
+    .blk.eu {
+      background: linear-gradient(#cfb489, #b89c66);
+      border: 1px solid #7c6136; color: #33230f;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 1px 2px rgba(70, 45, 15, .28);
+    }
+    .blk.cn {
+      background: linear-gradient(#c98f66, #ad6a41);
+      border: 1px solid #7a3d20; color: #381c0b;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 1px 2px rgba(70, 35, 10, .3);
+    }
+    .blk:hover { filter: brightness(1.07) saturate(1.05); z-index: 40; }
+    .in {
+      position: absolute; inset: 0; display: flex; align-items: center;
+      justify-content: center; padding: 0 5px; overflow: hidden;
+      font-size: 11px; letter-spacing: .3px; white-space: nowrap;
+    }
+    .chip {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      white-space: nowrap; font-size: 10.5px; letter-spacing: .2px;
+      color: #3a2a16; padding: 1px 7px; border-radius: 3px;
+      background: rgba(245, 235, 210, .95); border: 1px solid rgba(110, 80, 45, .55);
+      box-shadow: 0 1px 2px rgba(70, 45, 15, .2);
+      pointer-events: none; z-index: 6;
+    }
+    .chip-r  { left: 4px; }
+    .chip-l  { right: 4px; }
+    .chip-xl { left: -4px; transform: translate(-100%, -50%); }
+    .tip {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      white-space: nowrap; font-size: 11px; letter-spacing: .4px;
+      background: #33230f; color: #f2e6c8; border: 1px solid #8a6b3f;
+      padding: 4px 10px; border-radius: 2px;
+      opacity: 0; pointer-events: none; transition: opacity .12s ease; z-index: 60;
+    }
+    .eu .tip { bottom: calc(100% + 5px); }
+    .cn .tip { top: calc(100% + 5px); }
+    .blk:hover .tip { opacity: 1; }
+
+    .colophon {
+      text-align: center; font-size: 11.5px; font-style: italic;
+      color: #8a6b45; margin-top: 13px;
+    }
+
+    @media (max-width: 720px) {
+      .sheet { padding: 16px 12px 14px; margin: 10px 8px 24px; }
+      h1 { font-size: 22px; }
+      .side { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="plate">— Plate I · World Chronology —</div>
+    <h1>Empires &amp; Dynasties</h1>
+    <p class="sub">A Comparative Timeline of Europe &amp; China · 1046 B.C. – A.D. 1999 · Drawn Strictly to Scale</p>
+    <div class="orn"><span>❦</span></div>
+
+    <div class="toolbar">
+      <div class="legend">
+        <span><span class="sw eu"></span>Europe — above the line</span>
+        <span><span class="sw cn"></span>China — below the line</span>
+        <span class="hint">Hover a block for exact dates · drag to pan</span>
+      </div>
+      <div class="navbtns">
+        <button class="navbtn" id="btnL" type="button">&#171; Back in time</button>
+        <button class="navbtn" id="btnR" type="button">Forward in time &#187;</button>
+      </div>
+    </div>
+
+    <div class="board">
+      <aside class="side" id="side"></aside>
+      <div class="viewport" id="viewport" tabindex="0" aria-label="Scrollable comparative timeline of European and Chinese historical periods">
+        <div class="chart" id="chart"></div>
+      </div>
+    </div>
+
+    <p class="colophon">
+      Overlapping houses are set on separate shelves so no two blocks collide —
+      every shelf keeps its true place on the scale (1 year = 2.6 px). &#10086; finis &#10086;
+    </p>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ===== Data (years; negative = B.C.) =====
+    var EU = [
+      { n: 'Roman Republic',          s: -509, e: -27  },
+      { n: 'Western Roman Empire',    s: -27,  e: 476  },
+      { n: 'Eastern Roman Empire',    s: 330,  e: 1453 },
+      { n: 'Middle Ages',             s: 476,  e: 1453 },
+      { n: 'Frankish Kingdom',        s: 481,  e: 843  },
+      { n: 'Duchy of Normandy',       s: 911,  e: 1204 },
+      { n: 'Kingdom of England',      s: 927,  e: 1707 },
+      { n: 'Kievan Rus’',             s: 882,  e: 1240 },
+      { n: 'Grand Duchy of Moscow',   s: 1283, e: 1547 },
+      { n: 'Ottoman Empire',          s: 1299, e: 1923 },
+      { n: 'Spanish Empire',          s: 1492, e: 1898 },
+      { n: 'Portuguese Empire',       s: 1415, e: 1999 },
+      { n: 'Dutch Republic',          s: 1581, e: 1795 },
+      { n: 'Commonwealth of England', s: 1649, e: 1660 },
+      { n: 'Tsardom of Russia',       s: 1547, e: 1721 },
+      { n: 'Russian Empire',          s: 1721, e: 1917 },
+      { n: 'First French Empire',     s: 1804, e: 1815 },
+      { n: 'German Confederation',    s: 1815, e: 1866 },
+      { n: 'Kingdom of Italy',        s: 1861, e: 1946 },
+      { n: 'German Empire',           s: 1871, e: 1918 },
+      { n: 'Austro-Hungarian Empire', s: 1867, e: 1918 },
+      { n: 'Soviet Union',            s: 1922, e: 1991 }
+    ];
+    var CN = [
+      { n: '周 Zhou',                    s: -1046, e: -256 },
+      { n: '秦 Qin',                     s: -221,  e: -207 },
+      { n: '汉 Han',                     s: -202,  e: 220  },
+      { n: '三国 Three Kingdoms',        s: 220,   e: 280  },
+      { n: '晋 Jin',                     s: 265,   e: 420  },
+      { n: '南北朝 N. & S. Dynasties',   s: 420,   e: 589  },
+      { n: '隋 Sui',                     s: 581,   e: 618  },
+      { n: '唐 Tang',                    s: 618,   e: 907  },
+      { n: '五代 Five Dynasties',        s: 907,   e: 960  },
+      { n: '宋 Song',                    s: 960,   e: 1279 },
+      { n: '元 Yuan',                    s: 1271,  e: 1368 },
+      { n: '明 Ming',                    s: 1368,  e: 1644 },
+      { n: '清 Qing',                    s: 1636,  e: 1912 }
+    ];
+
+    // ===== Scale & geometry =====
+    var MIN = -1046, MAX = 1999, PXY = 2.6;        // pixels per year
+    var PAD_L = 70, PAD_R = 70, PAD_T = 42, PAD_B = 44;
+    var LANE = 36, BLK = 28;                        // shelf height / block height
+    var AXIS_H = 48, AXIS_GAP = 8;
+
+    function estW(t) {                              // rough rendered width of a label
+      var w = 16;
+      for (var i = 0; i < t.length; i++) {
+        var c = t.codePointAt(i);
+        if (c > 0x2E7F) w += 12;                    // CJK
+        else if (c >= 65 && c <= 90) w += 7.2;      // uppercase
+        else if (c === 32) w += 3.5;                // space
+        else w += 5.6;
+      }
+      return w;
+    }
+    function fmt(y) { return y < 0 ? (-y) + ' B.C.' : 'A.D. ' + y; }
+    function xOf(y) { return PAD_L + (y - MIN) * PXY; }
+
+    // Greedy shelf packing: overlapping periods never share a shelf.
+    function layout(items) {
+      items.sort(function (a, b) { return a.s - b.s || a.e - b.e; });
+      var ends = [], lastInLane = {};
+      items.forEach(function (it) {
+        var lane = -1;
+        for (var i = 0; i < ends.length; i++) {
+          if (ends[i] <= it.s) { lane = i; break; } // touching ends may share a shelf
+        }
+        if (lane < 0) { lane = ends.length; ends.push(it.e); }
+        else ends[lane] = it.e;
+        it.lane = lane;
+        if (lastInLane[lane]) {
+          lastInLane[lane].nextStart = it.s;         // neighbours on the same shelf
+          it.prevEnd = lastInLane[lane].e;
+        }
+        lastInLane[lane] = it;
+      });
+      return ends.length;
+    }
+
+    var euLanes = layout(EU);
+    var cnLanes = layout(CN);
+
+    var EU_TOP = PAD_T;
+    var AXIS_TOP = EU_TOP + euLanes * LANE + AXIS_GAP;
+    var CN_TOP = AXIS_TOP + AXIS_H;
+    var H = CN_TOP + cnLanes * LANE + PAD_B;
+    var W = PAD_L + (MAX - MIN) * PXY + PAD_R;
+
+    var chart = document.getElementById('chart');
+    var side = document.getElementById('side');
+    var vp = document.getElementById('viewport');
+
+    chart.style.width = W + 'px';
+    chart.style.height = H + 'px';
+    side.style.height = H + 'px';
+    vp.style.height = (H + 12) + 'px';               // room for the scrollbar
+
+    function el(cls, css) {
+      var d = document.createElement('div');
+      d.className = cls;
+      for (var k in css) d.style[k] = css[k];
+      return d;
+    }
+
+    // Before-Christ tint
+    chart.appendChild(el('bctint', { width: xOf(0) + 'px' }));
+
+    // Gridlines every 100 years; major every 500 with an axis label
+    for (var y = -1000; y <= 2000; y += 100) {
+      var x = xOf(y), major = (y % 500 === 0);
+      chart.appendChild(el('gline ' + (major ? 'major' : 'minor'), { left: x + 'px' }));
+      if (major) {
+        chart.appendChild(el('tick major', { left: x + 'px', top: (AXIS_TOP + 2) + 'px' }));
+        var lb = el('axlbl', { left: x + 'px', top: (AXIS_TOP + 14) + 'px' });
+        lb.textContent = y === 0 ? 'A.D. 1' : fmt(y);
+        chart.appendChild(lb);
+      } else {
+        chart.appendChild(el('tick minor', { left: x + 'px', top: (AXIS_TOP + 2) + 'px' }));
+      }
+    }
+
+    // Alternating shelf bands (subtle ledger ruling)
+    function bands(top0, lanes) {
+      for (var i = 1; i < lanes; i += 2) {
+        chart.appendChild(el('laneband', { top: (top0 + i * LANE) + 'px' }));
+      }
+    }
+    bands(EU_TOP, euLanes);
+    bands(CN_TOP, cnLanes);
+
+    // Axis line
+    chart.appendChild(el('axisline', { left: '0px', right: '0px', top: AXIS_TOP + 'px' }));
+
+    // Side captions (fixed column, aligned with the shelves)
+    function cap(text, top, h, cls) {
+      var c = el('cap ' + cls, { top: top + 'px', height: h + 'px' });
+      c.textContent = text;
+      side.appendChild(c);
+    }
+    cap('\u2766 Europe', EU_TOP, euLanes * LANE, 'c-eu');
+    cap('China \u2766', CN_TOP, cnLanes * LANE, 'c-cn');
+    var f = el('fleur', { top: (AXIS_TOP + AXIS_H / 2) + 'px' });
+    f.textContent = '\u2767';
+    side.appendChild(f);
+
+    // Period blocks
+    function addBlock(it, civ) {
+      var bw = Math.max(6, (it.e - it.s) * PXY);
+      var top = (civ === 'eu' ? EU_TOP : CN_TOP) + it.lane * LANE + (LANE - BLK) / 2;
+      var d = el('blk ' + civ, {
+        left: xOf(it.s) + 'px',
+        top: top + 'px',
+        width: bw + 'px'
+      });
+
+      var tip = document.createElement('span');
+      tip.className = 'tip';
+      tip.textContent = it.n + ' \u00B7 ' + fmt(it.s) + ' \u2013 ' + fmt(it.e);
+      d.appendChild(tip);
+
+      var w = estW(it.n);
+      if (w <= bw - 6) {
+        var inside = document.createElement('span');
+        inside.className = 'in';
+        inside.textContent = it.n;
+        d.appendChild(inside);
+      } else {
+        // Narrow block: anchor the label as a tag, into free space on its own shelf
+        var rightGap = (it.nextStart != null ? it.nextStart - it.e : MAX - it.e) * PXY;
+        var leftGap = (it.prevEnd != null ? it.s - it.prevEnd : it.s - MIN) * PXY;
+        var c = document.createElement('span');
+        if (bw + rightGap - 8 >= w) c.className = 'chip chip-r';
+        else if (bw + leftGap - 8 >= w) c.className = 'chip chip-l';
+        else c.className = 'chip chip-xl';
+        c.textContent = it.n;
+        d.appendChild(c);
+      }
+      chart.appendChild(d);
+    }
+    EU.forEach(function (it) { addBlock(it, 'eu'); });
+    CN.forEach(function (it) { addBlock(it, 'cn'); });
+
+    // ===== Navigation: buttons, drag-to-pan, arrow keys =====
+    function go(dx) { vp.scrollBy({ left: dx, behavior: 'smooth' }); }
+    document.getElementById('btnL').addEventListener('click', function () { go(-vp.clientWidth * 0.75); });
+    document.getElementById('btnR').addEventListener('click', function () { go(vp.clientWidth * 0.75); });
+
+    var down = false, sx = 0, sl = 0;
+    vp.addEventListener('mousedown', function (e) {
+      down = true; sx = e.pageX; sl = vp.scrollLeft;
+      vp.classList.add('grabbing');
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', function (e) {
+      if (down) vp.scrollLeft = sl - (e.pageX - sx);
+    });
+    window.addEventListener('mouseup', function () {
+      down = false; vp.classList.remove('grabbing');
+    });
+    vp.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { vp.scrollLeft += 170; e.preventDefault(); }
+      else if (e.key === 'ArrowLeft') { vp.scrollLeft -= 170; e.preventDefault(); }
+    });
+  })();
+  </script>
+</body>
+</html>

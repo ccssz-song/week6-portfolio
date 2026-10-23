@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xinyi Song - Contact Me</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <span class="brand">Xinyi Song</span>
+      <button class="menu-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html" class="active">Contact Me</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <h1 class="section-title">Say Hello</h1>
+      <p style="text-align:center; color:var(--text-soft); max-width:600px; margin:0 auto 2rem;">
+        I'd love to hear from you! Whether it's a question, a hello, or a book recommendation,
+        feel free to reach out using the form below.
+      </p>
+
+      <div class="contact-wrap">
+        <div class="contact-info">
+          <div class="info-item">
+            <span class="icon">✉️</span>
+            <span>hello@xinyisong.com</span>
+          </div>
+          <div class="info-item">
+            <span class="icon">📍</span>
+            <span>Shanghai, China</span>
+          </div>
+          <div class="info-item">
+            <span class="icon">💬</span>
+            <span>I usually reply within a day or two — thank you for your patience!</span>
+          </div>
+        </div>
+
+        <form class="contact-form" onsubmit="event.preventDefault(); document.getElementById('formMsg').style.display='block'; this.reset();">
+          <div class="field">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" placeholder="Jane Doe" required />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="jane@example.com" required />
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="4" placeholder="Write something kind..." required></textarea>
+          </div>
+          <button type="submit" class="btn">Send Message</button>
+          <p id="formMsg" style="display:none; margin-top:1rem; color:var(--primary-dark);">
+            Thank you! Your message has been noted. 💛
+          </p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p class="fun-fact"><strong>Fun fact:</strong> I once learned to fold an origami crane without looking at any instructions — it took 47 tries!</p>
+    <p class="footer-copy">© 2026 Xinyi Song · Made with care</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xinyi Song - Projects</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ===== Weather project card (matches todo-opener interaction) ===== */
+    .project-card.weather-opener { cursor: pointer; }
+    .project-card.weather-opener:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+    .project-card.weather-opener:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* ===== History timeline project card (links to its own page) ===== */
+    a.project-card { text-decoration: none; color: inherit; }
+    .project-card.history-card { cursor: pointer; transition: transform .18s ease, border-color .18s ease; }
+    .project-card.history-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+    .project-card.history-card:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* ===== Weather app inside modal ===== */
+    .weather-search {
+      display: flex; gap: 0.6rem; flex-wrap: wrap;
+    }
+    .weather-search input {
+      flex: 1 1 160px;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: var(--bg-alt);
+      color: var(--text);
+    }
+    .weather-search input:focus { outline: none; border-color: var(--primary); }
+    .weather-search .btn { flex: 0 0 auto; padding: 0.7rem 1.4rem; }
+    .weather-search .btn:disabled { opacity: 0.6; cursor: default; }
+
+    .weather-result {
+      margin-top: 1.2rem; min-height: 120px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .weather-message { color: var(--text-soft); font-size: 0.95rem; text-align: center; }
+    .weather-message.error { color: #c0395f; }
+
+    .weather-card {
+      width: 100%;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      text-align: center;
+    }
+    .weather-city {
+      font-size: 1.25rem; font-weight: 700; color: var(--primary-dark);
+      margin: 0;
+    }
+    .weather-main {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.6rem; margin: 0.4rem 0 0.2rem;
+    }
+    .weather-icon { font-size: 3.2rem; line-height: 1; }
+    .weather-temp { font-size: 2.6rem; font-weight: 700; color: #2c3e50; }
+    .weather-temp .unit { font-size: 1.3rem; font-weight: 600; color: #888; vertical-align: super; }
+    .weather-cond { font-size: 1rem; color: var(--text-soft); margin: 0 0 0.7rem; }
+    .weather-meta {
+      display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap;
+      font-size: 0.82rem; color: #777;
+      border-top: 1px solid var(--border); padding-top: 0.6rem;
+    }
+    .weather-report { font-size: 0.75rem; color: #aaa; margin-top: 0.5rem; }
+
+    .sug-label {
+      font-size: 0.85rem; color: var(--text-soft); margin: 0.7rem 0 0.4rem;
+    }
+    .weather-suggestions {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center;
+    }
+    .sug-chip {
+      background: #fff; border: 1px solid var(--primary);
+      color: var(--primary-dark); border-radius: 999px;
+      padding: 0.35rem 0.9rem; font-size: 0.85rem; font-family: inherit;
+      cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
+    }
+    .sug-chip:hover { background: var(--primary); color: #fff; }
+    .weather-hint {
+      font-size: 0.75rem; color: #999; margin: 0.6rem 0 0; line-height: 1.4;
+    }
+
+    @media (max-width: 600px) {
+      .weather-search .btn { flex: 1 1 100%; }
+      .weather-icon { font-size: 2.6rem; }
+      .weather-temp { font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <span class="brand">Xinyi Song</span>
+      <button class="menu-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="projects.html" class="active">Projects</a></li>
+        <li><a href="contact.html">Contact Me</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <h1 class="section-title">Things I've Made</h1>
+      <p style="text-align:center; color:var(--text-soft); max-width:640px; margin:0 auto 2rem;">
+        A small collection of projects I've enjoyed building. Each one taught me something new!
+      </p>
+
+      <div class="projects-grid">
+        <article class="project-card featured todo-opener" tabindex="0" role="button" aria-label="Open To-Do List app">
+          <img class="thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20to-do%20list%20app%20interface%20pink%20white%20pastel%20checklist%20calendar%20clean%20modern%20UI&image_size=landscape_16_9" alt="To-Do List app preview" />
+          <div class="body">
+            <h3>To-Do List App</h3>
+            <p>A clean, pink-themed to-do app with a calendar date picker, emoji + priority tags, checkboxes for done items, and one-click delete. Click the card to try it live!</p>
+            <div class="tags">
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">JavaScript</span>
+            </div>
+            <span class="open-hint">Click to open →</span>
+          </div>
+        </article>
+
+        <article class="project-card featured weather-opener" tabindex="0" role="button" aria-label="Open Weather app">
+          <img class="thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20weather%20app%20interface%20pink%20white%20pastel%20sun%20cloud%20temperature%20clean%20modern%20UI&image_size=landscape_16_9" alt="Weather app preview" />
+          <div class="body">
+            <h3>Weather App</h3>
+            <p>Type any city and get its current temperature, conditions, and a matching weather icon — with friendly loading and error messages. Click the card to try it live!</p>
+            <div class="tags">
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">UAPI Weather</span>
+            </div>
+            <span class="open-hint">Click to open →</span>
+          </div>
+        </article>
+
+        <a class="project-card featured history-card" href="history-timeline.html" aria-label="Open the Empires and Dynasties history timeline">
+          <img class="thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=vintage%20antique%20parchment%20world%20history%20timeline%20chart%2C%20sepia%20aged%20paper%2C%20european%20empires%20and%20chinese%20dynasties%20time%20bars%2C%20old%20atlas%20plate%20style%2C%20ornate%20double%20border%2C%20warm%20brown%20ink&image_size=landscape_16_9" alt="Empires and Dynasties timeline preview" />
+          <div class="body">
+            <h3>Empires &amp; Dynasties — History Timeline</h3>
+            <p>A parchment-style timeline for my history lesson: European empires on top, Chinese dynasties below, every block placed strictly by its years on a scrollable 3,000-year scale. Click to open!</p>
+            <div class="tags">
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">History</span>
+            </div>
+            <span class="open-hint">Click to open →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p class="fun-fact"><strong>Fun fact:</strong> I once learned to fold an origami crane without looking at any instructions — it took 47 tries!</p>
+    <p class="footer-copy">© 2026 Xinyi Song · Made with care</p>
+  </footer>
+
+  <!-- Modal: the live To-Do List app, opened by clicking the card above -->
+  <div class="modal-overlay" id="todoModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="To-Do List app">
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close">×</button>
+      <div class="modal-body">
+        <h2 class="modal-title">To-Do List</h2>
+        <p class="modal-sub">Pick a date on the calendar, write your task, and press Add.</p>
+        <p class="storage-line"><span class="storage-chip probing" id="storageStatus">⏳ Connecting…</span></p>
+
+        <div class="todo-add">
+          <input type="text" id="taskInput" placeholder="What do you need to do?" aria-label="Task description" />
+          <input type="date" id="dateInput" aria-label="Task date" />
+          <button class="btn" id="addBtn" type="button">Add</button>
+
+          <div class="todo-options">
+            <div class="emoji-picker" id="emojiPicker" role="group" aria-label="Pick an emoji">
+              <button type="button" class="emoji-btn is-selected" data-emoji="📝" aria-label="Note">📝</button>
+              <button type="button" class="emoji-btn" data-emoji="💼" aria-label="Work">💼</button>
+              <button type="button" class="emoji-btn" data-emoji="🏠" aria-label="Home">🏠</button>
+              <button type="button" class="emoji-btn" data-emoji="⭐" aria-label="Important">⭐</button>
+              <button type="button" class="emoji-btn" data-emoji="🎯" aria-label="Goal">🎯</button>
+              <button type="button" class="emoji-btn" data-emoji="🛒" aria-label="Shopping">🛒</button>
+              <button type="button" class="emoji-btn" data-emoji="💡" aria-label="Idea">💡</button>
+            </div>
+            <div class="prio-picker" id="prioPicker" role="group" aria-label="Pick a priority">
+              <button type="button" class="prio-btn prio-low" data-prio="low">Low</button>
+              <button type="button" class="prio-btn prio-med is-selected" data-prio="med">Medium</button>
+              <button type="button" class="prio-btn prio-high" data-prio="high">High</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="todo-counter" id="todoCounter" aria-live="polite"></p>
+
+        <ul class="todo-list" id="todoList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: the live Weather app, opened by clicking the card above -->
+  <div class="modal-overlay" id="weatherModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Weather app">
+      <button class="modal-close" id="weatherModalClose" type="button" aria-label="Close">×</button>
+      <div class="modal-body">
+        <h2 class="modal-title">Weather</h2>
+        <p class="modal-sub">Enter a city name and press Search to see the current weather.</p>
+
+        <div class="weather-search">
+          <input type="text" id="weatherCity" placeholder="e.g. Shanghai" aria-label="City name" autocomplete="off" />
+          <button class="btn" id="weatherSearchBtn" type="button">Search</button>
+        </div>
+
+        <div class="weather-result" id="weatherResult" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ===== Weather app (UAPI Weather API) =====
+  // No API key is required by this public endpoint.
+  (function () {
+    var WEATHER_API = 'https://uapis.cn/api/v1/misc/weather';
+
+    // QWeather-style condition codes returned by the API, mapped to an emoji
+    // icon and an English label so the site stays English-facing.
+    var CONDITION_MAP = {
+      '100': ['☀️', 'Clear'],
+      '101': ['⛅', 'Cloudy'],
+      '102': ['🌤️', 'Few Clouds'],
+      '103': ['🌤️', 'Partly Cloudy'],
+      '104': ['☁️', 'Overcast'],
+      '150': ['🌙', 'Clear (Night)'],
+      '151': ['☁️', 'Cloudy (Night)'],
+      '152': ['🌙', 'Few Clouds (Night)'],
+      '153': ['🌙', 'Partly Cloudy (Night)'],
+      '300': ['🌦️', 'Shower Rain'],
+      '301': ['🌧️', 'Heavy Shower Rain'],
+      '302': ['⛈️', 'Thundershower'],
+      '303': ['⛈️', 'Heavy Thunderstorm'],
+      '304': ['🌨️', 'Thundershower with Hail'],
+      '305': ['🌦️', 'Light Rain'],
+      '306': ['🌧️', 'Moderate Rain'],
+      '307': ['🌧️', 'Heavy Rain'],
+      '308': ['🌧️', 'Extreme Rain'],
+      '309': ['🌧️', 'Drizzle'],
+      '310': ['🌧️', 'Rainstorm'],
+      '311': ['🌧️', 'Heavy Rainstorm'],
+      '312': ['🌧️', 'Severe Rainstorm'],
+      '313': ['🌧️', 'Freezing Rain'],
+      '314': ['🌧️', 'Light to Moderate Rain'],
+      '315': ['🌧️', 'Moderate to Heavy Rain'],
+      '316': ['🌧️', 'Heavy to Extreme Rain'],
+      '317': ['🌧️', 'Shower Rain'],
+      '318': ['🌧️', 'Freezing Rain'],
+      '399': ['🌧️', 'Rain'],
+      '400': ['🌨️', 'Light Snow'],
+      '401': ['🌨️', 'Moderate Snow'],
+      '402': ['❄️', 'Heavy Snow'],
+      '403': ['❄️', 'Snowstorm'],
+      '404': ['🌨️', 'Sleet'],
+      '405': ['🌨️', 'Rain to Snow'],
+      '406': ['🌨️', 'Snow to Rain'],
+      '407': ['🌨️', 'Shower Snow'],
+      '408': ['🌨️', 'Snow Flurries'],
+      '409': ['🌨️', 'Light to Moderate Snow'],
+      '410': ['❄️', 'Moderate to Heavy Snow'],
+      '499': ['❄️', 'Snow'],
+      '500': ['🌫️', 'Mist'],
+      '501': ['🌫️', 'Fog'],
+      '502': ['🌫️', 'Haze'],
+      '503': ['🌪️', 'Sand'],
+      '504': ['🌪️', 'Dust'],
+      '507': ['🌪️', 'Sandstorm'],
+      '508': ['🌪️', 'Severe Sandstorm'],
+      '509': ['🌫️', 'Dense Fog'],
+      '510': ['🌫️', 'Strong Dense Fog'],
+      '511': ['🌫️', 'Moderate Haze'],
+      '512': ['🌫️', 'Heavy Haze'],
+      '513': ['🌪️', 'Severe Sand'],
+      '514': ['🌪️', 'Heavy Sand'],
+      '515': ['🌪️', 'Duststorm'],
+      '599': ['🌫️', 'Dust'],
+      '900': ['🥵', 'Hot'],
+      '901': ['🥶', 'Cold'],
+      '999': ['🌡️', 'Unknown Conditions']
+    };
+
+    // ----- Modal open / close -----
+    var opener = document.querySelector('.weather-opener');
+    var modal = document.getElementById('weatherModal');
+    var closeBtn = document.getElementById('weatherModalClose');
+    var cityInput = document.getElementById('weatherCity');
+    var searchBtn = document.getElementById('weatherSearchBtn');
+    var result = document.getElementById('weatherResult');
+
+    function openModal() {
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      setTimeout(function () { cityInput.focus(); }, 60);
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      opener.focus();
+    }
+
+    opener.addEventListener('click', openModal);
+    opener.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(); }
+    });
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+
+    // ----- UI helpers -----
+    function showMessage(text, isError) {
+      result.innerHTML = '';
+      var p = document.createElement('p');
+      p.className = 'weather-message' + (isError ? ' error' : '');
+      p.textContent = text;
+      result.appendChild(p);
+    }
+
+    function setLoading() {
+      searchBtn.disabled = true;
+      searchBtn.textContent = 'Searching…';
+      showMessage('Loading…', false);
+    }
+
+    function resetButton() {
+      searchBtn.disabled = false;
+      searchBtn.textContent = 'Search';
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str == null ? '' : String(str);
+      return div.innerHTML;
+    }
+
+    // The API returns wind text in Chinese (e.g. "西南风", "3级"); translate the
+    // common compass directions / force level, fall back to the raw value.
+    function translateWindDir(text) {
+      if (!text) return '';
+      var core = String(text).replace(/风/g, '');
+      if (!/[东南西北]/.test(core)) return text; // already Latin / unknown
+      var map = { '北': 'N', '南': 'S', '东': 'E', '西': 'W' };
+      var letters = core.split('').map(function (ch) { return map[ch] || ''; }).join('');
+      if (letters.length === 2) letters = letters[1] + letters[0]; // 西南 → SW
+      return letters ? letters + ' wind' : text;
+    }
+    function translateWindPower(text) {
+      if (!text) return '';
+      var m = String(text).match(/\d+/);
+      return m ? 'force ' + m[0] : text;
+    }
+    function translateReportTime(text) {
+      if (!text) return '';
+      var s = String(text);
+      if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}/.test(s)) return 'Updated ' + s.replace('T', ' ').slice(0, 16);
+      if (!/[\u4e00-\u9fa5]/.test(s)) return s;
+      var n = s.match(/\d+/);
+      if (/刚刚/.test(s)) return 'Updated just now';
+      if (/分钟/.test(s)) return 'Updated ' + (n ? n[0] : 'a few') + ' min ago';
+      if (/小时/.test(s)) return 'Updated ' + (n ? n[0] : 'an') + ' h ago';
+      if (/昨天/.test(s)) return 'Updated yesterday';
+      return '';
+    }
+
+    // ----- City suggestions (client-side; the API has no search endpoint) -----
+    var KNOWN_CITIES = [
+      // China
+      'Beijing','Shanghai','Guangzhou','Shenzhen','Chengdu','Chongqing','Tianjin','Wuhan',
+      "Xi'an",'Suzhou','Nanjing','Hangzhou','Qingdao','Dalian','Xiamen','Changsha','Zhengzhou',
+      'Ningbo','Kunming','Hefei','Foshan','Dongguan','Harbin','Jinan','Shenyang','Changchun',
+      'Nanning','Guiyang','Nanchang','Taiyuan','Shijiazhuang','Lanzhou','Haikou','Sanya',
+      'Urumqi','Hohhot','Fuzhou','Xuzhou','Wuxi','Wenzhou','Zhuhai','Zhongshan','Huizhou',
+      'Quanzhou','Guilin','Lhasa','Yinchuan','Xining','Yantai','Tangshan','Baoding','Luoyang',
+      'Nantong','Shaoxing','Jiaxing','Jinhua','Hong Kong','Macau','Taipei','Kaohsiung',
+      // Asia & Pacific
+      'Tokyo','Osaka','Kyoto','Seoul','Busan','Bangkok','Singapore','Kuala Lumpur','Jakarta',
+      'Manila','Hanoi','Ho Chi Minh City','Mumbai','Delhi','Bangalore','Dubai','Doha','Tel Aviv',
+      'Riyadh','Sydney','Melbourne','Brisbane','Perth','Auckland',
+      // Europe
+      'London','Manchester','Paris','Berlin','Munich','Madrid','Barcelona','Rome','Milan',
+      'Amsterdam','Vienna','Prague','Moscow','Istanbul','Athens','Lisbon','Brussels',
+      'Stockholm','Copenhagen','Oslo','Helsinki','Warsaw','Budapest','Zurich','Dublin',
+      // Americas
+      'New York','Los Angeles','Chicago','San Francisco','Seattle','Boston','Washington',
+      'Miami','Toronto','Vancouver','Montreal','Mexico City','Sao Paulo','Rio de Janeiro',
+      'Buenos Aires','Lima','Santiago','Bogota',
+      // Africa
+      'Cairo','Lagos','Nairobi','Johannesburg','Cape Town'
+    ];
+
+    function levenshtein(a, b) {
+      var m = a.length, n = b.length;
+      if (!m) return n;
+      if (!n) return m;
+      var prev = [], cur = [], i, j;
+      for (j = 0; j <= n; j++) prev[j] = j;
+      for (i = 1; i <= m; i++) {
+        cur[0] = i;
+        for (j = 1; j <= n; j++) {
+          var cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+          cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+        }
+        var tmp = prev; prev = cur; cur = tmp;
+      }
+      return prev[n];
+    }
+
+    function suggestCities(query) {
+      var q = String(query || '').trim().toLowerCase();
+      if (!q) return [];
+      var scored = [];
+      for (var i = 0; i < KNOWN_CITIES.length; i++) {
+        var name = KNOWN_CITIES[i];
+        var c = name.toLowerCase();
+        var score, d;
+        if (c === q) score = 0;
+        else if (c.indexOf(q) === 0 || q.indexOf(c) === 0) score = 1 + Math.abs(c.length - q.length) * 0.1;
+        else if (c.indexOf(q) !== -1 || q.indexOf(c) !== -1) score = 3 + Math.abs(c.length - q.length) * 0.1;
+        else {
+          d = levenshtein(q, c);
+          if (d <= 2 && d / Math.max(q.length, c.length) < 0.45) score = 5 + d + Math.abs(c.length - q.length) * 0.1;
+          else continue;
+        }
+        scored.push({ name: name, score: score });
+      }
+      scored.sort(function (a, b) { return a.score - b.score; });
+      var out = [];
+      for (var k = 0; k < scored.length && out.length < 5; k++) {
+        if (out.indexOf(scored[k].name) === -1) out.push(scored[k].name);
+      }
+      return out;
+    }
+
+    // ----- Render -----
+    function renderWeather(query, data) {
+      var map = CONDITION_MAP[String(data.weather_icon)] || ['🌡️', null];
+      var icon = map[0];
+      // Use the English label for known codes; fall back to the API's text.
+      var condition = map[1] || data.weather || '—';
+
+      result.innerHTML =
+        '<div class="weather-card">' +
+          '<h3 class="weather-city">' + escapeHtml(query) + '</h3>' +
+          '<div class="weather-main">' +
+            '<span class="weather-icon" aria-hidden="true">' + icon + '</span>' +
+            '<span class="weather-temp">' + escapeHtml(data.temperature) + '<span class="unit">°C</span></span>' +
+          '</div>' +
+          '<p class="weather-cond">' + escapeHtml(condition) + '</p>' +
+          '<div class="weather-meta">' +
+            '<span>💧 Humidity: ' + escapeHtml(data.humidity) + '%</span>' +
+            '<span>🌬️ ' + escapeHtml(translateWindDir(data.wind_direction)) + ' ' + escapeHtml(translateWindPower(data.wind_power)) + '</span>' +
+          '</div>' +
+          (function () {
+            var t = translateReportTime(data.report_time);
+            return t ? '<p class="weather-report">' + escapeHtml(t) + '</p>' : '';
+          })() +
+        '</div>';
+    }
+
+    // ----- Not-found result with city suggestions -----
+    function showNotFound(city) {
+      result.innerHTML = '';
+
+      var box = document.createElement('div');
+      box.className = 'weather-message error';
+
+      var p = document.createElement('p');
+      p.style.margin = '0';
+      p.textContent = 'Couldn’t find that city — check the spelling.';
+      box.appendChild(p);
+
+      var names = suggestCities(city);
+      if (names.length) {
+        var label = document.createElement('p');
+        label.className = 'sug-label';
+        label.textContent = 'Did you mean:';
+        box.appendChild(label);
+
+        var wrap = document.createElement('div');
+        wrap.className = 'weather-suggestions';
+        names.forEach(function (name) {
+          var chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'sug-chip';
+          chip.textContent = name;
+          chip.addEventListener('click', function () {
+            cityInput.value = name;
+            searchWeather();
+          });
+          wrap.appendChild(chip);
+        });
+        box.appendChild(wrap);
+      }
+      result.appendChild(box);
+    }
+
+    // ----- Transport: direct call, then CORS-proxy fallbacks -----
+    // The API only sends Access-Control-Allow-Origin for http(s) origins.
+    // When this page is opened directly from disk (file://, origin "null")
+    // the browser blocks the direct response, so we retry via public
+    // CORS proxies as a fallback.
+    var PROXIES = [
+      function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+      function (u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); }
+    ];
+
+    function NotFoundError() {}
+    function RateLimitError() {}
+
+    function fetchWithTimeout(url, ms) {
+      var controller = new AbortController();
+      var timer = setTimeout(function () { controller.abort(); }, ms);
+      return fetch(url, { signal: controller.signal })
+        .then(function (res) { clearTimeout(timer); return res; })
+        .catch(function (err) { clearTimeout(timer); throw err; });
+    }
+
+    function parseResponse(res) {
+      if (res.status === 404) return Promise.reject(new NotFoundError());
+      if (res.status === 429) return Promise.reject(new RateLimitError());
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }
+
+    async function fetchWeather(city) {
+      var url = WEATHER_API + '?city=' + encodeURIComponent(city);
+      var directFailed = false;
+
+      // 1) Direct request (works when the site is hosted / served over http).
+      try {
+        var res = await fetchWithTimeout(url, 8000);
+        var data = await parseResponse(res);
+        if (data && (data.error === 'LOCATION_NOT_FOUND' ||
+                     data.temperature === undefined || data.temperature === null)) {
+          throw new NotFoundError();
+        }
+        return data;
+      } catch (err) {
+        if (err instanceof NotFoundError) throw err;
+        if (err instanceof RateLimitError) throw err;
+        // TypeError = network/CORS block (e.g. file:// origin); AbortError = timeout.
+        directFailed = true;
+      }
+
+      // 2) CORS-proxy fallbacks for file:// pages or blocked networks.
+      if (directFailed) {
+        for (var i = 0; i < PROXIES.length; i++) {
+          try {
+            var pres = await fetchWithTimeout(PROXIES[i](url), 10000);
+            var pdata = await parseResponse(pres);
+            if (pdata && (pdata.error === 'LOCATION_NOT_FOUND' ||
+                          pdata.temperature === undefined || pdata.temperature === null)) {
+              throw new NotFoundError();
+            }
+            return pdata;
+          } catch (e) {
+            if (e instanceof NotFoundError) throw e;
+            if (e instanceof RateLimitError) throw e;
+            // try the next proxy
+          }
+        }
+      }
+      throw new Error('unreachable');
+    }
+
+    // ----- Search -----
+    async function searchWeather() {
+      var city = cityInput.value.trim();
+
+      // Empty input: warn the user and do NOT call the API.
+      if (!city) {
+        showMessage('Enter a city first.', true);
+        cityInput.focus();
+        return;
+      }
+
+      setLoading();
+      try {
+        var data = await fetchWeather(city);
+        renderWeather(city, data);
+      } catch (err) {
+        if (err instanceof NotFoundError) {
+          showNotFound(city);
+        } else if (err instanceof RateLimitError) {
+          showMessage('Too many requests — please wait a moment and try again.', true);
+        } else {
+          result.innerHTML = '';
+          var box = document.createElement('div');
+          box.className = 'weather-message error';
+          var p = document.createElement('p');
+          p.style.margin = '0';
+          p.textContent = 'Couldn’t reach the weather service. Please check your connection and try again.';
+          box.appendChild(p);
+          if (location.protocol === 'file:') {
+            var hint = document.createElement('p');
+            hint.className = 'weather-hint';
+            hint.textContent = 'Tip: opening this page through a local web server (e.g. “python -m http.server”) also fixes this.';
+            box.appendChild(hint);
+          }
+          result.appendChild(box);
+        }
+      } finally {
+        resetButton();
+      }
+    }
+
+    searchBtn.addEventListener('click', searchWeather);
+    cityInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') searchWeather();
+    });
+  })();
+  </script>
+
+  <script>
+  (function () {
+    // ----- Modal open / close -----
+    var opener = document.querySelector('.todo-opener');
+    var modal = document.getElementById('todoModal');
+    var closeBtn = document.getElementById('modalClose');
+
+    function openModal() {
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      setTimeout(function () { document.getElementById('taskInput').focus(); }, 60);
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      opener.focus();
+    }
+
+    opener.addEventListener('click', openModal);
+    opener.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal();
+      }
+    });
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+
+    // ----- To-Do app logic -----
+    var taskInput = document.getElementById('taskInput');
+    var dateInput = document.getElementById('dateInput');
+    var addBtn = document.getElementById('addBtn');
+    var list = document.getElementById('todoList');
+    var counter = document.getElementById('todoCounter');
+
+    // Emoji + priority pickers (defaults match the selected buttons in HTML).
+    var selectedEmoji = '📝';
+    var selectedPrio = 'med';
+    var emojiPicker = document.getElementById('emojiPicker');
+    var prioPicker = document.getElementById('prioPicker');
+
+    function pickFrom(group, btn, attr, onChange) {
+      var prev = group.querySelector('.is-selected');
+      if (prev) prev.classList.remove('is-selected');
+      btn.classList.add('is-selected');
+      onChange(btn.getAttribute(attr));
+    }
+
+    emojiPicker.addEventListener('click', function (e) {
+      var btn = e.target.closest('.emoji-btn');
+      if (btn) pickFrom(emojiPicker, btn, 'data-emoji', function (v) { selectedEmoji = v; });
+    });
+
+    prioPicker.addEventListener('click', function (e) {
+      var btn = e.target.closest('.prio-btn');
+      if (btn) pickFrom(prioPicker, btn, 'data-prio', function (v) { selectedPrio = v; });
+    });
+
+    // Default the date picker to today.
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var dd = String(today.getDate()).padStart(2, '0');
+    dateInput.value = yyyy + '-' + mm + '-' + dd;
+
+    // ----- Supabase data layer (with localStorage fallback) -----
+    var SUPABASE_URL = 'https://psyrsaklatbmwjoppfcf.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_6-iCs9oqKzHdyRdMLOU_iQ_24UguYWE';
+    var sb = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+      : null;
+
+    var items = [];
+    var LS_KEY = 'xinyi_todos_v1';
+    var storageMode = 'probing'; // 'supabase' | 'local'
+
+    function loadLocal() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
+      catch (e) { return []; }
+    }
+    function saveLocal(rows) {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(rows || [])); } catch (e) {}
+    }
+    function makeId() {
+      if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+      return 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+    }
+
+    // localStorage also holds {text, emoji, prio} for cloud rows (these fields
+    // are NOT stored in Supabase per the user's choice). These helpers keep the
+    // local enrichment rows in sync with the cloud rows by id.
+    function findLocalRow(id) {
+      var rows = loadLocal();
+      for (var i = 0; i < rows.length; i++) if (rows[i].id === id) return rows[i];
+      return null;
+    }
+    function upsertLocalRow(row) {
+      var rows = loadLocal();
+      var found = false;
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].id === row.id) { rows[i] = row; found = true; break; }
+      }
+      if (!found) rows.push(row);
+      saveLocal(rows);
+    }
+    function removeLocalRow(id) {
+      saveLocal(loadLocal().filter(function (r) { return r.id !== id; }));
+    }
+
+    function setStatus(mode) {
+      storageMode = mode;
+      var chip = document.getElementById('storageStatus');
+      if (!chip) return;
+      chip.className = 'storage-chip ' + mode;
+      chip.textContent = mode === 'supabase'
+        ? '☁️ Saved to Supabase'
+        : mode === 'local'
+          ? '💾 Local only — run setup SQL for cloud sync'
+          : '⏳ Connecting…';
+    }
+
+    // Probe Supabase with a tiny SELECT. On any failure (no RLS, wrong schema,
+    // network) we fall back to localStorage so the app still works for the user.
+    function probeStorage() {
+      if (!sb) { setStatus('local'); return Promise.resolve(); }
+      setStatus('probing');
+      return sb.from('todos').select('id').limit(1)
+        .then(function (res) {
+          if (res.error) throw res.error;
+          setStatus('supabase');
+        })
+        .catch(function () { setStatus('local'); });
+    }
+
+    function formatDate(d) {
+      if (!d) return '';
+      var date = new Date(d + 'T00:00:00');
+      if (isNaN(date.getTime())) return d;
+      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function prioLabel(p) {
+      return p === 'low' ? 'Low' : p === 'high' ? 'High' : 'Medium';
+    }
+
+    function selectAll(el) {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    function showError(msg) {
+      list.innerHTML = '';
+      var err = document.createElement('li');
+      err.className = 'todo-empty';
+      err.style.color = '#c0395f';
+      err.textContent = msg;
+      list.appendChild(err);
+      counter.textContent = '';
+    }
+
+    function updateCounter() {
+      var total = items.length;
+      var done = 0;
+      for (var i = 0; i < items.length; i++) if (items[i].done) done++;
+      if (total === 0) {
+        counter.textContent = '';
+      } else {
+        counter.innerHTML = '<span class="done-count">' + done + '</span> of ' + total + ' tasks completed';
+      }
+    }
+
+    // Read all todos, ordered by creation time. Uses Supabase if the probe
+    // succeeded; otherwise localStorage so the app keeps working.
+    function fetchTodos() {
+      list.innerHTML = '';
+      var loading = document.createElement('li');
+      loading.className = 'todo-empty';
+      loading.textContent = 'Loading tasks…';
+      list.appendChild(loading);
+      counter.textContent = '';
+
+      if (storageMode === 'supabase' && sb) {
+        sb.from('todos').select('*').order('created_at', { ascending: true })
+          .then(function (res) {
+            if (res.error) {
+              // RLS/schema not ready → fall back so the user can still add tasks.
+              setStatus('local');
+              items = loadLocal();
+              render();
+              return;
+            }
+            // All fields live in Supabase now: id, text, is_complete, date,
+            // priority, emoji, created_at. No localStorage merge needed.
+            items = (res.data || []).map(function (row) {
+              return {
+                id: row.id,
+                text: row.text || '',
+                date: row.date,
+                done: row.is_complete,
+                emoji: row.emoji || '📝',
+                prio: row.priority || 'med',
+                created_at: row.created_at
+              };
+            });
+            render();
+          })
+          .catch(function () {
+            setStatus('local');
+            items = loadLocal();
+            render();
+          });
+      } else {
+        items = loadLocal();
+        render();
+      }
+    }
+
+    function toggleDone(id, done) {
+      if (storageMode === 'supabase' && sb) {
+        sb.from('todos').update({ is_complete: done }).eq('id', id)
+          .then(function (res) { if (res.error) { console.error(res.error); fetchTodos(); } })
+          .catch(function (err) { console.error(err); fetchTodos(); });
+      } else {
+        var rows = loadLocal();
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].id === id) { rows[i].done = done; break; }
+        }
+        saveLocal(rows);
+      }
+    }
+
+    function updateText(id, text) {
+      if (storageMode === 'supabase' && sb) {
+        sb.from('todos').update({ text: text }).eq('id', id)
+          .then(function (res) { if (res.error) { console.error(res.error); fetchTodos(); } })
+          .catch(function (err) { console.error(err); fetchTodos(); });
+      } else {
+        var rows = loadLocal();
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].id === id) { rows[i].text = text; break; }
+        }
+        saveLocal(rows);
+      }
+    }
+
+    function deleteTodo(id) {
+      if (storageMode === 'supabase' && sb) {
+        sb.from('todos').delete().eq('id', id)
+          .then(function (res) { if (res.error) { console.error(res.error); fetchTodos(); } })
+          .catch(function (err) { console.error(err); fetchTodos(); });
+      } else {
+        var rows = loadLocal().filter(function (r) { return r.id !== id; });
+        saveLocal(rows);
+      }
+      removeLocalRow(id);  // drop local enrichment (text/emoji/prio) too
+    }
+
+    function render() {
+      list.innerHTML = '';
+      updateCounter();
+
+      if (items.length === 0) {
+        var empty = document.createElement('li');
+        empty.className = 'todo-empty';
+        empty.textContent = 'Nothing to do yet — add your first task above!';
+        list.appendChild(empty);
+        return;
+      }
+
+      items.forEach(function (item) {
+        var prio = item.prio || 'med';
+        var li = document.createElement('li');
+        li.className = 'todo-item prio-' + prio + (item.done ? ' done' : '');
+
+        // Checkbox (custom round checkmark).
+        var label = document.createElement('label');
+        label.className = 'todo-check';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !!item.done;
+        cb.setAttribute('aria-label', 'Mark task done');
+        cb.addEventListener('change', function () {
+          item.done = cb.checked;     // optimistic
+          render();
+          toggleDone(item.id, cb.checked);
+        });
+        var mark = document.createElement('span');
+        mark.className = 'checkmark';
+        label.appendChild(cb);
+        label.appendChild(mark);
+        li.appendChild(label);
+
+        // Emoji tag.
+        var emoji = document.createElement('span');
+        emoji.className = 'todo-emoji';
+        emoji.textContent = item.emoji || '📝';
+        emoji.setAttribute('aria-hidden', 'true');
+        li.appendChild(emoji);
+
+        // Task text + date (click the text to edit inline).
+        var content = document.createElement('div');
+        content.className = 'todo-content';
+        var text = document.createElement('span');
+        text.className = 'todo-text editable';
+        text.textContent = item.text;
+        text.title = 'Click to edit';
+        text.setAttribute('role', 'textbox');
+        text.tabIndex = 0;
+        (function (el, row) {
+          function enterEdit() {
+            el.setAttribute('contenteditable', 'true');
+            el.classList.add('editing');
+            el.focus();
+            selectAll(el);
+          }
+          el.addEventListener('click', function () {
+            if (el.getAttribute('contenteditable') !== 'true') enterEdit();
+          });
+          el.addEventListener('keydown', function (e) {
+            if (el.getAttribute('contenteditable') !== 'true') {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enterEdit(); }
+              return;
+            }
+            if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+            else if (e.key === 'Escape') { e.preventDefault(); el.textContent = row.text; el.blur(); }
+          });
+          el.addEventListener('blur', function () {
+            el.removeAttribute('contenteditable');
+            el.classList.remove('editing');
+            var val = el.textContent.trim();
+            if (val && val !== row.text) {
+              row.text = val;          // optimistic
+              el.textContent = val;
+              updateText(row.id, val);
+            } else {
+              el.textContent = row.text;
+            }
+          });
+          el.addEventListener('paste', function (e) {
+            e.preventDefault();
+            var data = (e.clipboardData || window.clipboardData).getData('text');
+            document.execCommand('insertText', false, data);
+          });
+        })(text, item);
+        var date = document.createElement('span');
+        date.className = 'todo-date';
+        date.textContent = formatDate(item.date);
+        content.appendChild(text);
+        content.appendChild(date);
+        li.appendChild(content);
+
+        // Priority badge.
+        var prioBadge = document.createElement('span');
+        prioBadge.className = 'todo-prio prio-' + prio;
+        prioBadge.textContent = prioLabel(prio);
+        li.appendChild(prioBadge);
+
+        // Delete button (X).
+        var del = document.createElement('button');
+        del.className = 'todo-delete';
+        del.type = 'button';
+        del.setAttribute('aria-label', 'Delete task');
+        del.textContent = '×';
+        del.addEventListener('click', function () {
+          var id = item.id;
+          var i = items.indexOf(item);
+          if (i >= 0) items.splice(i, 1);  // optimistic
+          render();
+          deleteTodo(id);
+        });
+        li.appendChild(del);
+
+        list.appendChild(li);
+      });
+    }
+
+    function addTaskLocal(payload) {
+      var row = Object.assign({ id: makeId(), created_at: new Date().toISOString() }, payload);
+      var rows = loadLocal();
+      rows.push(row);
+      saveLocal(rows);
+      taskInput.value = '';
+      items.push(row);
+      render();
+      taskInput.focus();
+    }
+
+    function addTask() {
+      var text = taskInput.value.trim();
+      var date = dateInput.value;
+      if (!text) { taskInput.focus(); return; }
+      if (addBtn.disabled) return;            // a save is already in flight
+      var payload = { text: text, date: date, done: false, emoji: selectedEmoji, prio: selectedPrio };
+
+      if (storageMode === 'supabase' && sb) {
+        addBtn.disabled = true;
+        // Supabase columns: id, text, is_complete, date, priority, emoji, created_at.
+        sb.from('todos').insert({ text: text, is_complete: false, date: date, priority: selectedPrio, emoji: selectedEmoji }).select()
+          .then(function (res) {
+            addBtn.disabled = false;
+            if (res.error) {
+              // Cloud write failed (schema/RLS not ready). Flip to local so the
+              // user's task is never lost, and so all future ops use local.
+              console.error('Supabase insert failed, falling back to local:', res.error.message);
+              setStatus('local');
+              addTaskLocal(payload);
+              return;
+            }
+            var cloudRow = res.data && res.data[0];
+            if (!cloudRow) {
+              // RLS blocked the returning row; we can't link the just-typed text
+              // to a cloud id, so keep this row local-only.
+              setStatus('local');
+              addTaskLocal(payload);
+              return;
+            }
+            var row = {
+              id: cloudRow.id,
+              text: cloudRow.text || text,
+              date: cloudRow.date || date,
+              done: cloudRow.is_complete !== undefined ? cloudRow.is_complete : false,
+              emoji: cloudRow.emoji || selectedEmoji,
+              prio: cloudRow.priority || selectedPrio,
+              created_at: cloudRow.created_at || new Date().toISOString()
+            };
+            upsertLocalRow(row);            // mirror to localStorage as a backup
+            taskInput.value = '';
+            items.push(row);
+            render();
+            taskInput.focus();
+          })
+          .catch(function (err) {
+            addBtn.disabled = false;
+            console.error('Supabase insert threw, falling back to local:', err && err.message);
+            setStatus('local');
+            addTaskLocal(payload);
+          });
+      } else {
+        addTaskLocal(payload);
+      }
+    }
+
+    addBtn.addEventListener('click', addTask);
+    taskInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') addTask();
+    });
+
+    probeStorage().then(fetchTodos);
+  })();
+  </script>
+</body>
+</html>
